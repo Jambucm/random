@@ -189,19 +189,19 @@ def muliple(hand:list, n_equal:int):
     If not - None
     '''
 
-    num_hand = numbers(hand) #extracts suits from hand
-    counts = Counter(num_hand) #dictionary for suits counts
+    num_hand = numbers(hand) #extracts cards from hand
+    counts = Counter(num_hand) #dictionary for cards counts
 
     for card, count in counts.items(): #loops through dicts items (keys and values)
         if n_equal == 2:
             if count >= 2: 
-                return card #returns the suit if it has more than 5 cards
+                return card #returns the card if it is a pair
         if n_equal == 3:
             if count >= 3: 
-                return card #returns the suit if it has more than 5 cards
+                return card #returns the card if it is a three of a kind
         if n_equal == 4:
             if count >= 4: 
-                return card #returns the suit if it has more than 5 cards
+                return card #returns the card if it is a four of a kind
             
 print('Multiple test:')
 print(muliple(straight_hand_one, 2))
