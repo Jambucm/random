@@ -177,6 +177,39 @@ print(flush(straight_hand_one))
 print(flush(flush_hand))
 print(flush_hand)
 
+def muliple(hand:list, n_equal:int):
+    '''
+    Checks if there are 2 equal cards.
+
+    Args:
+    hand - hand list
+
+    Returns:
+    If pair - pair card
+    If not - None
+    '''
+
+    num_hand = numbers(hand) #extracts suits from hand
+    counts = Counter(num_hand) #dictionary for suits counts
+
+    for card, count in counts.items(): #loops through dicts items (keys and values)
+        if n_equal == 2:
+            if count >= 2: 
+                return card #returns the suit if it has more than 5 cards
+        if n_equal == 3:
+            if count >= 3: 
+                return card #returns the suit if it has more than 5 cards
+        if n_equal == 4:
+            if count >= 4: 
+                return card #returns the suit if it has more than 5 cards
+            
+print('Multiple test:')
+print(muliple(straight_hand_one, 2))
+print(muliple(pair_hand, 2))
+print(muliple(pair_hand, 3))
+print(muliple(three_of_a_kind_hand, 3))
+
+
 
 def sanity_check():
     print(f'Full deck card count: {len(full_deck)}')
