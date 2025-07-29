@@ -125,7 +125,8 @@ def straight(hand:list):
     hand - hand list
 
     Returns:
-    Highest player hand
+    If sequence exists - highest sequence
+    If sequence does not exist - None
     '''
 
     num_hand = numbers(hand, sort=True) #turns player hand into numbers
@@ -153,13 +154,23 @@ print(straight(flush_hand))
 print(straight(['1A', '2A', '3A', '4A', '5A', '6A', '7A']))
 
 def flush(hand:list):
+    '''
+    Checks if there are 5 cards with equal suits (flush) in the players hand (2 picked cards + table) and returns the flush's suit.
 
-    suits_hand = suits(hand)
-    counts = Counter(suits_hand)
+    Args:
+    hand - hand list
 
-    for suit, count in counts.items():
-        if count >= 5:
-            return suit
+    Returns:
+    If is flush - flush's suit
+    If is not flush - None
+    '''
+
+    suits_hand = suits(hand) #extracts suits from hand
+    counts = Counter(suits_hand) #dictionary for suits counts
+
+    for suit, count in counts.items(): #loops through dicts items (keys and values)
+        if count >= 5: 
+            return suit #returns the suit if it has more than 5 cards
 
 print('Flush test:')
 print(flush(straight_hand_one))
