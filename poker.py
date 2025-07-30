@@ -130,6 +130,7 @@ def straight(hand:list):
     '''
 
     num_hand = numbers(hand, sort=True) #turns player hand into numbers
+    num_hand.sort()
 
     straight_hand = [] #initializes sequence hand empty list
     for i in range(len(num_hand) - 4): #loops through all cards from 1st to 3rd (only possible 5 cards sequences in a 7 card hand)
@@ -170,12 +171,12 @@ def flush(hand:list):
 
     for suit, count in counts.items(): #loops through dicts items (keys and values)
         if count >= 5: 
-            return suit #returns the suit if it has more than 5 cards
+            flush_cards = [card for card in hand if card[-1] == suit]
+            return flush_cards
 
 print('Flush test:')
 print(flush(straight_hand_one))
 print(flush(flush_hand))
-print(flush_hand)
 
 def muliple(hand:list, n_equal:int):
     '''
@@ -192,22 +193,209 @@ def muliple(hand:list, n_equal:int):
     num_hand = numbers(hand) #extracts cards from hand
     counts = Counter(num_hand) #dictionary for cards counts
 
+    high = 0
+
     for card, count in counts.items(): #loops through dicts items (keys and values)
-        if n_equal == 2:
-            if count >= 2: 
-                return card #returns the card if it is a pair
-        if n_equal == 3:
-            if count >= 3: 
-                return card #returns the card if it is a three of a kind
-        if n_equal == 4:
-            if count >= 4: 
-                return card #returns the card if it is a four of a kind
+        if count >= n_equal and card > high:
+            high = card
+
+    if high > 0:
+        return [high] * n_equal
             
 print('Multiple test:')
 print(muliple(straight_hand_one, 2))
 print(muliple(pair_hand, 2))
 print(muliple(pair_hand, 3))
 print(muliple(three_of_a_kind_hand, 3))
+print(muliple(four_of_a_kind_hand, 4))
+
+def full_house(hand:list):
+    '''
+    Checks if there is a combination of 3 and 2 equal cards.
+
+    Args:
+    hand - hand list
+
+    Returns:
+    If is full house - full house hand (5 cards)
+    If is not full house - None
+    '''
+
+    num_hand = numbers(hand) #extracts cards from hand
+    counts = Counter(num_hand) #dictionary for cards counts
+    card_2 = []
+    card_3 = []
+    full_house_cards = []
+
+    for card, count in counts.items(): #loops through dicts items (keys and values)
+        if count >= 2:
+            card_2.append(card)
+        if count == 3:
+            card_3.append(card)
+
+    high_3 = 0
+    for card in card_3:
+        if card > high_3:
+            high_3 = card
+
+    high_2 = 0
+    for card in card_2:
+        if card > high_2 and card != high_3:
+            high_2 = card
+
+    if high_2 == 0 or high_3 == 0:
+        return None
+    else:
+        for i in range(3):
+            full_house_cards.append(high_3)
+        for i in range(2):
+            full_house_cards.append(high_2)
+        return full_house_cards
+    
+print('Full house test:')
+print(full_house(full_house_hand))
+print(full_house(pair_hand))
+print(full_house(three_of_a_kind_hand))
+print(full_house(['2A', '2A', '2A', '5A', '5A', '5A', '10A']))
+
+
+def high_card(hand:list):
+    '''
+    Finds highest card in hand.
+
+    Args:
+    hand - hand list
+
+    Returns:
+    Highest card
+    '''
+
+    num_hand = numbers(hand) #extracts cards from hand
+    high = 0 #initializes high card
+
+    for card in num_hand:
+        if card > high:
+            high = card #updates high card for each loop, if card is higher than previous
+
+    return [high]
+
+print('High card test:')
+print(high_card(high_card_hand))
+print(high_card(pair_hand))
+print(high_card(three_of_a_kind_hand))
+
+def two_pair(hand:list):
+
+    num_hand = numbers(hand) #extracts cards from hand
+    counts = Counter(num_hand) #dictionary for cards counts
+
+    high_1 = 0
+    high_2 = 0
+
+    two_pair_cards = []
+
+    for card, count in counts.items():
+        if count >= 2:
+            if card > high_1:
+                high_2 = high_1
+                high_1 = card
+            elif card > high_2:
+                high_2 = card
+
+    if high_1 == 0 or high_2 == 0:
+        return None
+    else:
+        for i in range(2):
+            two_pair_cards.append(high_1)
+        for i in range(2):
+            two_pair_cards.append(high_2)
+        return two_pair_cards
+
+print('Two pair test:')
+print(two_pair(two_pair_hand))
+print(two_pair(pair_hand))
+print(two_pair(three_of_a_kind_hand))
+print(two_pair(['2A','2A','2A','3A','3A','7A','7A']))
+
+def straight_flush(hand:list):
+
+    flush_cards = flush(hand)
+    new_hand = hand.copy()
+    
+    if flush_cards:
+        flush_suit = flush_cards[0][-1]
+    else:
+        return None
+
+    for card in hand:
+        if card[-1] != flush_suit:
+            new_hand.remove(card)
+
+    if new_hand:
+        straight_new_hand = straight(new_hand)
+        if straight_new_hand:
+            return new_hand
+        
+print('Straight flush test:')
+print(straight_flush(straight_flush_hand))
+print(straight_flush(straight_hand))
+print(straight_flush(flush_hand))
+        
+def royal_flush(hand:list):
+
+    straight_cards = straight_flush(hand)
+
+    if straight_cards:
+        if 1 in numbers(straight_cards):
+            return straight_cards
+
+print('Royal flush test:')
+print(royal_flush(royal_flush_hand))
+print(royal_flush(straight_flush_hand))
+print(royal_flush(straight_hand))
+print(royal_flush(flush_hand))
+
+
+def best_hand(hand:list):
+
+    best = 1
+
+    if muliple(hand, 2):
+        best = 2
+    if two_pair(hand):
+        best = 3
+    if muliple(hand, 3):
+        best = 4
+    if straight(hand):
+        best = 5
+    if flush(hand):
+        best = 6
+    if full_house(hand):
+        best = 7
+    if muliple(hand, 4):
+        best = 8
+    if straight_flush(hand):
+        best = 9
+    if royal_flush(hand):
+        best = 10
+
+    return best
+
+print('Best hand test:')
+print(best_hand(high_card_hand))
+print(best_hand(pair_hand))
+print(best_hand(two_pair_hand))
+print(best_hand(three_of_a_kind_hand))
+print(best_hand(straight_hand))
+print(best_hand(flush_hand))
+print(best_hand(full_house_hand))
+print(best_hand(four_of_a_kind_hand))
+print(best_hand(straight_flush_hand))
+print(best_hand(royal_flush_hand))
+
+
+
+
 
 
 
